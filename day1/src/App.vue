@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <ul>
-      <li v-for="todo in todos" v-bind:key="todo.time" >
+      <li v-for="todo in todos" :key="todo.time" :id="'item-' + todo.time">
         <span v-if="todo.completed">COMPLETED</span>
         {{todo.text | cap }}
       </li>

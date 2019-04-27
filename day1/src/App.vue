@@ -14,20 +14,41 @@
         {{todo.text | cap }}
       </li>
     </ul>
-    <form>
-      <input type="text" v-model.lazy="inputText">
+    <form @submit.prevent="saveData()">
+      <!-- .has return true/false -->
+      <span v-if="errors.has('newInput')">Form error!!</span>
+      <!-- .first return error string -->
+      <span> {{errors.first('newInput')}}</span>
+
+      <input type="text" name="newInput" v-model.lazy="inputText" v-validate="'required'">
       <button type="submit">Save</button>
     </form>
   </div>
 </template>
 
 <script>
-
 export default {
   name: 'app',
   filters: {
     cap (val) {
       return val.toUpperCase()
+    }
+  },
+  methods: {
+    log () {
+      console.log('Save')
+    },
+    saveData () {
+      if(!this.errors.has('newInput')) {
+        let todoItem = {
+        text: this.inputText,
+        time: Date.now(),
+        completed: false
+      }
+      this.todos.push(todoItem)
+      this.inputText = ''
+      this.log()
+      }
     }
   },
   data () {

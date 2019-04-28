@@ -1,61 +1,68 @@
 <template>
   <div id="app">
-    <ul>
-      <li v-for="todo in todos" 
-      :key="todo.time" 
-      :id="prefix + todo.time" 
-      :class="{
-        red: (todo.completed === false),
-        green: (todo.completed === true),
-      }"
-      :style="{
-        'font-size':fontSize
-      }">
-        {{todo.text | cap }}
-      </li>
-    </ul>
-    <form @submit.prevent="saveData()">
-      <!-- .has return true/false -->
-      <span v-if="errors.has('newInput')">Form error!!</span>
-      <!-- .first return error string -->
-      <span> {{errors.first('newInput')}}</span>
-
-      <input type="text" name="newInput" v-model.lazy="inputText" v-validate="'required'">
-      <button type="submit">Save</button>
-    </form>
+    <alertBox>
+      <h1 slot="header">Error!!</h1>
+      <span slot="sub-header">Fix now!!</span>
+      <span v-once>{{ text }}</span>
+    </alertBox>
+    <img :src="logo">
+    <todoList :todos="sortedTodo" @onComplete="completedTask" name="my todo"></todoList>
+    <inputBox @onSubmitData="saveData" ref="inputBox"></inputBox>
   </div>
 </template>
 
 <script>
+// import todoList from './components/todoList'
+import inputBox from './components/inputBox'
+import mixins from './mixins.js'
+import alertBox from './components/alertBox'
+import Logo from '../assets/main.js'
+
 export default {
+  components: {
+    'inputBox': inputBox,
+    'alertBox': alertBox,
+    'todoList': () => import('./components/todoList.vue')
+  },
+  mixins:[mixins],
   name: 'app',
-  filters: {
-    cap (val) {
-      return val.toUpperCase()
+  watch: {
+    todos: function (newVal ,oldVal) {
+      this.savePersistant()
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      if (localStorage['todos']) {
+        this.todos = JSON.parse(localStorage['todos'])
+      }
+    },5000)
+  },
+  computed: {
+    sortedTodo () {
+      let todos = this.todos
+      return todos.sort((a,b) => b.time - a.time)
     }
   },
   methods: {
-    log () {
-      console.log('Save')
+    savePersistant () {
+      localStorage['todos'] = JSON.stringify(this.todos)
     },
-    saveData () {
-      if(!this.errors.has('newInput')) {
-        let todoItem = {
-        text: this.inputText,
-        time: Date.now(),
-        completed: false
-      }
-      this.todos.push(todoItem)
-      this.inputText = ''
-      this.log()
-      }
+    completedTask (time) {
+      this.todos = this.todos.map(i => {
+        if(time === i.time) {
+          i.completed = true
+        }
+        return i
+      })
+    },
+    saveData (data) {
+      this.todos.push(data)
     }
   },
   data () {
     return {
-      fontSize: '20px',
-      prefix: 'item-',
-      inputText:'',
+      logo: Logo,
       todos:[
         {
           text: '1st todo',
@@ -86,17 +93,5 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-}
-li {
-  list-style: none;
-}
-.red {
-  color: crimson;
-}
-.green {
-  color:darkgreen;
-}
-.big{
-  font-size: 18px;
 }
 </style>

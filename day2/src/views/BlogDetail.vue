@@ -1,7 +1,6 @@
 <template>
   <div class="blog-detail" v-if="blog.title">
-    <h1>{{ blog.title.rendered }}</h1>
-    <p v-html="blog.excerpt.rendered" class="wrap"></p>
+    <p v-html="blog.content.rendered" class="wrap"></p>
     <router-link :to="{ name: 'blog-detail-full', params: { id: blog.id } }"
       >Read more...</router-link
     >
@@ -10,6 +9,7 @@
 
 <script>
 import axios from "axios";
+import { mapActions } from "vuex";
 
 export default {
   data() {
@@ -32,6 +32,13 @@ export default {
     this.blog = res.data;
     this.title = res.data.title.rendered;
     this.$emit("updateHead");
+    this.changeHeader({
+      title: res.data.title.rendered,
+      excerpt: res.data.excerpt.rendered
+    });
+  },
+  methods: {
+    ...mapActions(["changeHeader"])
   }
 };
 </script>

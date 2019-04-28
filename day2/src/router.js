@@ -26,14 +26,6 @@ export default new Router({
         header: BlogHeader,
         body: BlogDetail
       }
-    },
-    {
-      path: "/blog/:id/full",
-      name: "blog-detail-full",
-      components: {
-        header: BlogHeader,
-        body: BlogDetailFull
-      }
     }
   ]
 });

@@ -1,7 +1,6 @@
 <template fucntional>
     <div class="alert">
-        <slot name="header"></slot>
-        <slot name="sub-header"></slot>
+        <slot></slot>
     </div>
 </template>
 

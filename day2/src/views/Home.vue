@@ -2,7 +2,15 @@
   <div class="home">
     <ul>
       <li v-for="blog in blogs" :key="blog.id">
-        {{ blog.title.rendered }}
+        <router-link
+          :to="{
+            name: 'blog-detail',
+            params: {
+              id: blog.id
+            }
+          }"
+          >{{ blog.title.rendered }}</router-link
+        >
       </li>
     </ul>
   </div>
